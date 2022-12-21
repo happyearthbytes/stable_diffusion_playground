@@ -1,0 +1,10 @@
+FROM bash:alpine3.15
+
+RUN apk add parallel aria2
+COPY containers/download/* .
+RUN mkdir -vp /export/.cache /export/StableDiffusion \
+  /export/Codeformer /export/GFPGAN /export/ESRGAN \
+  /export/BSRGAN /export/RealESRGAN /export/SwinIR \
+  /export/LDSR /export/ScuNET /export/embeddings \
+  /export/VAE /export/Deepdanbooru /export/MiDaS
+CMD ["aria2c", "-x", "16", "-j", "10", "--split", "10", "--min-split-size", "100M", "--download-result", "full", "-i", "links.txt", "--dir", "/export", "--continue"]
