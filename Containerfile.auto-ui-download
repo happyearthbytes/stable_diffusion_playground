@@ -1,0 +1,45 @@
+###############################################################################
+# Download xformers
+FROM alpine:3 as xformers
+RUN apk add aria2
+RUN aria2c -x 10 --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/3.1.0/xformers-0.0.15.dev0+4e3631d.d20221125-cp310-cp310-linux_x86_64.whl'
+
+###############################################################################
+# Download repos
+FROM alpine/git:2.36.2 as download
+USER 1000
+# SHELL ["/bin/sh", "-ceuxo", "pipefail"]
+ENV REPO_PATH=repositories
+ENV HASH_tt=24268930bf1dce879235a7fddd0b2355b84d7ea6
+ENV HASH_sdsa=47b6b607fdd31875c9279cd2f4f16b92e4ea958e
+ENV HASH_cf=c5b4593074ba6214284d6acd5f1719b6c5d739af
+ENV HASH_bl=48211a1594f1321b00f14c9f7a5b4813144b2fb9
+ENV HASH_kd=5b3af030dd83e0297272d861c19477735d0317ec
+ENV HASH_ci=2486589f24165c8e3b303f84e9dbbea318df83e8
+ENV HASH_sdw1=98947d173e3f1667eba29c904f681047dea9de90
+ENV HASH_sdw2=685f9631b56ff8bd43bce24ff5ce0f9a0e9af490
+COPY --from=xformers /wheel.whl /wheel.whl
+WORKDIR /download
+# clone script
+RUN echo 'mkdir -p ${REPO_PATH}/"$1" && \
+          cd ${REPO_PATH}/"$1" && \
+          git init && \
+          git remote add origin "$2" && \
+          git fetch origin "$3" --depth=1 && \
+          git reset --hard "$3" && \
+          rm -rf .git' > clone.sh \
+    && chmod +x clone.sh
+# Clone repos
+RUN ./clone.sh taming-transformers https://github.com/CompVis/taming-transformers.git ${HASH_tt} && \
+    rm -rf data assets **/*.ipynb
+RUN ./clone.sh stable-diffusion-stability-ai https://github.com/Stability-AI/stablediffusion.git ${HASH_sdsa} && \
+    rm -rf assets data/**/*.png data/**/*.jpg data/**/*.gif
+RUN ./clone.sh CodeFormer https://github.com/sczhou/CodeFormer.git ${HASH_cf} && \
+    rm -rf assets inputs
+RUN ./clone.sh BLIP https://github.com/salesforce/BLIP.git ${HASH_bl}
+RUN ./clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git ${HASH_kd}
+RUN ./clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator ${HASH_ci} && \
+    mkdir ${REPO_PATH}/interrogate && cp ${REPO_PATH}/clip-interrogator/data/* ${REPO_PATH}/interrogate
+RUN ./clone.sh stable-diffusion-webui1 https://github.com/AUTOMATIC1111/stable-diffusion-webui.git ${HASH_sdw1}
+RUN ./clone.sh stable-diffusion-webui2 https://github.com/AUTOMATIC1111/stable-diffusion-webui.git ${HASH_sdw2}
+
