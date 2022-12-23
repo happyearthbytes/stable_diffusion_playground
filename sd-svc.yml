@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: stable-diffusion-svc
+spec:
+  type: NodePort
+  selector:
+    app: sd
+  ports:
+  - protocol: TCP
+    port: 7860
+    targetPort: 7860
+    nodePort: 30000

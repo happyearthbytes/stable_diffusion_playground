@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stable-diffusion-job
+  namespace: sd
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: stable-diffusion-job
+        image: auto_ui:latest
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        ports:
+        - containerPort: 7860
+        volumeMounts:
+        - name: host-paths
+          mountPath: /data
+          subPath: data
+        - name: host-paths
+          mountPath: /output
+          subPath: output
+      volumes:
+      - name: host-paths
+        persistentVolumeClaim:
+          claimName: stable-diffusion-claim
+  backoffLimit: 1

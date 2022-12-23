@@ -34,7 +34,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     -r ${ROOT}/${REPO_PATH}/stable-diffusion-webui1/requirements_versions.txt \
     -r ${ROOT}/${REPO_PATH}/stable-diffusion-webui2/requirements_versions.txt
 
-COPY containers/auto_ui/* /docker/
 COPY --from=download /download/${REPO_PATH}/stable-diffusion-webui2/ ${ROOT}
 
 RUN mv  ${ROOT}/style.css ${ROOT}/user.css && \

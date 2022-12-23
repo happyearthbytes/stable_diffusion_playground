@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sd-cm
+data:
+  unused1: val1
+  unused2: val2

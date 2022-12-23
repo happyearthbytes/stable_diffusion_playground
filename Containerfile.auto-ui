@@ -1,6 +1,8 @@
 FROM auto_ui_install:latest as install
 ENV ROOT=/install
 
+COPY containers/auto_ui/* /docker/
+
 WORKDIR ${ROOT}
 ENV CLI_ARGS="--allow-code --medvram --xformers --enable-insecure-extension-access --api"
 EXPOSE 7860

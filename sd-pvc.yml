@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stable-diffusion-claim
+  namespace: sd
+spec:
+  storageClassName: stable-diffusion-storage
+  accessModes:
+    - ReadWriteMany
+  # storageClassName: manual
+  # volumeName: stable-diffusion-host-path-pv
+  resources:
+    requests:
+      storage: 1Gi
+
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: host-path-pvc
+# spec:
+#   storageClassName: host-path-rw
+#   accessModes:
+#     - ReadWriteMany
+#   resources:
+#     requests:
+#       storage: 5Gi
+#   volumeMode: Filesystem
+#   volumeName: host-path-pvc
+#   mountOptions:
+#     - hard
+#     - nfsvers=4.1
+#   volumeMounts:
+#     - mountPath: /mnt/data1
+#       name: host-path-pvc
+#     - mountPath: /mnt/data2
+#       name: host-path-pvc
