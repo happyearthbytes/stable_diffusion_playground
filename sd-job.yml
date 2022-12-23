@@ -9,7 +9,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: stable-diffusion-job
-        image: auto_ui:latest
+        image: registry:5000/stable-diffusion-ui:latest
         resources:
           limits:
             nvidia.com/gpu: 1
